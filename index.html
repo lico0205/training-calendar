@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="トレーニング記録">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>トレーニング記録</title>
+<style>
+:root{--bg:#f7f5ef;--card:#fff;--ink:#292a27;--muted:#777970;--line:#e8e5dc;--green:#3c8061;--pale:#e7f1e9;--accent:#d9a65b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+main{max-width:540px;margin:auto;padding:20px 16px 40px}.top{display:flex;align-items:center;justify-content:space-between;margin:8px 2px 18px}
+h1{font-size:23px;margin:0;font-weight:750;letter-spacing:.02em}.sub{font-size:12px;color:var(--muted);margin-top:5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:17px;margin:13px 0;box-shadow:0 3px 14px #292a2708}
+.monthbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.monthbar strong{font-size:18px}
+button{font:inherit;border:0;cursor:pointer}.nav{background:#f1efe8;border-radius:11px;padding:8px 13px;color:var(--ink);font-size:18px}
+.week,.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.week div{text-align:center;font-size:11px;color:var(--muted);padding:5px 0}
+.day{min-height:48px;border-radius:12px;background:#faf9f6;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px}
+.day.out{opacity:.28}.day.selected{outline:2px solid var(--green);background:#f1f7f2}.day.done{background:var(--pale);color:#286348;font-weight:700}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green)}.day.today{box-shadow:inset 0 0 0 1px var(--accent)}
+.legend{display:flex;gap:15px;color:var(--muted);font-size:11px;margin-top:12px}.legend span{display:flex;align-items:center;gap:5px}
+.sectiontitle{font-size:16px;font-weight:750;margin:0 0 4px}.datehint{font-size:12px;color:var(--muted);margin-bottom:13px}
+.task{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0;padding-bottom:2px}
+.task input{appearance:none;width:23px;height:23px;border:1.7px solid #b9bdb5;border-radius:7px;flex:none;margin:0}
+.task input:checked{background:var(--green);border-color:var(--green)}
+.task input:checked:after{content:"✓";display:block;color:white;text-align:center;font-weight:800;line-height:20px}
+.task label{flex:1;font-size:14px}.task small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#faf9f6;border-radius:13px;padding:12px 8px;text-align:center}.stat b{display:block;font-size:22px;color:var(--green)}.stat span{font-size:10px;color:var(--muted)}
+.actions{display:flex;gap:9px;margin-top:12px}.secondary{background:#f1efe8;color:var(--ink);padding:10px 12px;border-radius:11px;font-size:12px}
+.note{font-size:11px;color:var(--muted);line-height:1.6;margin:13px 3px}
+footer{text-align:center;color:var(--muted);font-size:10px;margin-top:18px}
+</style>
+</head>
+<body>
+<main>
+ <div class="top"><div><h1>トレーニング記録</h1><div class="sub">今日の小さな積み重ねを、カレンダーに。</div></div><div style="font-size:27px">🌿</div></div>
+ <section class="card">
+  <div class="monthbar"><button class="nav" id="prev" aria-label="前の月">‹</button><strong id="monthLabel"></strong><button class="nav" id="next" aria-label="次の月">›</button></div>
+  <div class="week"><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div><div>日</div></div>
+  <div class="calendar" id="calendar"></div>
+  <div class="legend"><span><i class="dot"></i>記録あり</span><span>○ 今日</span></div>
+ </section>
+ <section class="card">
+  <div class="sectiontitle" id="selectedTitle"></div><div class="datehint">できた項目にチェックを入れてください</div>
+  <div id="tasks"></div>
+ </section>
+ <section class="card">
+  <div class="sectiontitle" style="margin-bottom:12px">今月の記録</div>
+  <div class="stats"><div class="stat"><b id="daysDone">0</b><span>トレーニングした日</span></div><div class="stat"><b id="rate">0%</b><span>実施率</span></div><div class="stat"><b id="walks">0</b><span>ウォーキング回数</span></div></div>
+ </section>
+ <div class="actions"><button class="secondary" id="todayBtn">今日に戻る</button><button class="secondary" id="exportBtn">記録をバックアップ</button><button class="secondary" id="importBtn">復元</button><input id="fileInput" type="file" accept="application/json" hidden></div>
+ <p class="note">記録はこのiPhoneのブラウザ内に保存されます。Safariの履歴・Webサイトデータを消去すると記録が消えることがあります。「記録をバックアップ」から定期的に保存できます。</p>
+ <footer>あなたのペースで、無理なく続けましょう。</footer>
+</main>
+<script>
+const tasks=[
+ {id:"row",name:"背中：ペットボトルローイング",detail:"15回 × 3セット"},
+ {id:"squat",name:"脚：スクワット",detail:"15回 × 2セット"},
+ {id:"bridge",name:"お尻：ヒップリフト",detail:"15回 × 2セット"},
+ {id:"walk",name:"ウォーキング",detail:"50分"}
+];
+const key="training-calendar-v1";
+let records={};try{records=JSON.parse(localStorage.getItem(key)||"{}")}catch(e){}
+let selected=new Date();selected.setHours(12,0,0,0);
+let shown=new Date(selected.getFullYear(),selected.getMonth(),1);
+const pad=n=>String(n).padStart(2,"0"), dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem(key,JSON.stringify(records))}
+function isDone(k){return !!(records[k]&&tasks.some(t=>records[k][t.id]))}
+function render(){
+ const y=shown.getFullYear(),m=shown.getMonth();
+ $("monthLabel").textContent=`${y}年${m+1}月`;
+ const first=new Date(y,m,1), offset=(first.getDay()+6)%7, start=new Date(y,m,1-offset);
+ const cal=$("calendar");cal.innerHTML="";
+ for(let i=0;i<42;i++){
+  const d=new Date(start);d.setDate(start.getDate()+i);
+  const k=dateKey(d), b=document.createElement("button");b.className="day";
+  if(d.getMonth()!==m)b.classList.add("out");
+  if(dateKey(d)===dateKey(selected))b.classList.add("selected");
+  if(dateKey(d)===dateKey(new Date()))b.classList.add("today");
+  if(isDone(k))b.classList.add("done");
+  b.innerHTML=`<span>${d.getDate()}</span>${isDone(k)?'<i class="dot"></i>':''}`;
+  b.addEventListener("click",()=>{selected=d;render()});cal.appendChild(b);
+ }
+ $("selectedTitle").textContent=`${selected.getFullYear()}年${selected.getMonth()+1}月${selected.getDate()}日`;
+ const k=dateKey(selected),r=records[k]||{};const area=$("tasks");area.innerHTML="";
+ tasks.forEach(t=>{
+  const div=document.createElement("div");div.className="task";
+  const input=document.createElement("input");input.type="checkbox";input.id="task-"+t.id;input.checked=!!r[t.id];
+  input.addEventListener("change",()=>{records[k]=records[k]||{};records[k][t.id]=input.checked;if(!input.checked&&!tasks.some(x=>records[k][x.id]))delete records[k];save();render()});
+  const label=document.createElement("label");label.htmlFor=input.id;label.textContent=t.name;
+  const small=document.createElement("small");small.textContent=t.detail;label.appendChild(small);
+  div.append(input,label);area.appendChild(div);
+ });
+ const count=Object.keys(records).filter(x=>x.startsWith(`${y}-${pad(m+1)}-`)&&isDone(x)).length;
+ const walk=Object.keys(records).filter(x=>x.startsWith(`${y}-${pad(m+1)}-`)&&records[x]?.walk).length;
+ const total=new Date(y,m+1,0).getDate();
+ $("daysDone").textContent=count;$("rate").textContent=Math.round(count/total*100)+"%";$("walks").textContent=walk;
+}
+$("prev").onclick=()=>{shown=new Date(shown.getFullYear(),shown.getMonth()-1,1);render()};
+$("next").onclick=()=>{shown=new Date(shown.getFullYear(),shown.getMonth()+1,1);render()};
+$("todayBtn").onclick=()=>{selected=new Date();selected.setHours(12,0,0,0);shown=new Date(selected.getFullYear(),selected.getMonth(),1);render()};
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(records,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="training-record-backup.json";a.click();URL.revokeObjectURL(a.href)};
+$("importBtn").onclick=()=>$("fileInput").click();
+$("fileInput").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!data||typeof data!=="object"||Array.isArray(data))throw Error();records=data;save();render();alert("記録を復元しました。")}catch(err){alert("バックアップファイルを読み込めませんでした。")}e.target.value=""};
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+render();
+</script>
+</body></html>
