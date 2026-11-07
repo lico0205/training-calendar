@@ -3,111 +3,94 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f5ef">
+<meta name="theme-color" content="#f5f4ed">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="トレーニング記録">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-180.png">
-<title>トレーニング記録</title>
+<meta name="apple-mobile-web-app-title" content="からだ記録">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-180.png">
+<title>からだ記録</title>
 <style>
-:root{--bg:#f7f5ef;--card:#fff;--ink:#292a27;--muted:#777970;--line:#e8e5dc;--green:#3c8061;--pale:#e7f1e9;--accent:#d9a65b}
+:root{--bg:#f5f4ed;--paper:#fffefa;--ink:#303a32;--muted:#7b847b;--line:#e6e8df;--green:#557b65;--pale:#eaf1e9;--gold:#c49a5b;--rose:#b97969}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
-main{max-width:540px;margin:auto;padding:20px 16px 40px}.top{display:flex;align-items:center;justify-content:space-between;margin:8px 2px 18px}
-h1{font-size:23px;margin:0;font-weight:750;letter-spacing:.02em}.sub{font-size:12px;color:var(--muted);margin-top:5px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:17px;margin:13px 0;box-shadow:0 3px 14px #292a2708}
-.monthbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.monthbar strong{font-size:18px}
-button{font:inherit;border:0;cursor:pointer}.nav{background:#f1efe8;border-radius:11px;padding:8px 13px;color:var(--ink);font-size:18px}
-.week,.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.week div{text-align:center;font-size:11px;color:var(--muted);padding:5px 0}
-.day{min-height:48px;border-radius:12px;background:#faf9f6;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px}
-.day.out{opacity:.28}.day.selected{outline:2px solid var(--green);background:#f1f7f2}.day.done{background:var(--pale);color:#286348;font-weight:700}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--green)}.day.today{box-shadow:inset 0 0 0 1px var(--accent)}
-.legend{display:flex;gap:15px;color:var(--muted);font-size:11px;margin-top:12px}.legend span{display:flex;align-items:center;gap:5px}
-.sectiontitle{font-size:16px;font-weight:750;margin:0 0 4px}.datehint{font-size:12px;color:var(--muted);margin-bottom:13px}
-.task{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0;padding-bottom:2px}
-.task input{appearance:none;width:23px;height:23px;border:1.7px solid #b9bdb5;border-radius:7px;flex:none;margin:0}
-.task input:checked{background:var(--green);border-color:var(--green)}
-.task input:checked:after{content:"✓";display:block;color:white;text-align:center;font-weight:800;line-height:20px}
-.task label{flex:1;font-size:14px}.task small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#faf9f6;border-radius:13px;padding:12px 8px;text-align:center}.stat b{display:block;font-size:22px;color:var(--green)}.stat span{font-size:10px;color:var(--muted)}
-.actions{display:flex;gap:9px;margin-top:12px}.secondary{background:#f1efe8;color:var(--ink);padding:10px 12px;border-radius:11px;font-size:12px}
-.note{font-size:11px;color:var(--muted);line-height:1.6;margin:13px 3px}
-footer{text-align:center;color:var(--muted);font-size:10px;margin-top:18px}
-</style>
-</head>
-<body>
-<main>
- <div class="top"><div><h1>トレーニング記録</h1><div class="sub">今日の小さな積み重ねを、カレンダーに。</div></div><div style="font-size:27px">🌿</div></div>
- <section class="card">
-  <div class="monthbar"><button class="nav" id="prev" aria-label="前の月">‹</button><strong id="monthLabel"></strong><button class="nav" id="next" aria-label="次の月">›</button></div>
-  <div class="week"><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div><div>日</div></div>
-  <div class="calendar" id="calendar"></div>
-  <div class="legend"><span><i class="dot"></i>記録あり</span><span>○ 今日</span></div>
- </section>
- <section class="card">
-  <div class="sectiontitle" id="selectedTitle"></div><div class="datehint">できた項目にチェックを入れてください</div>
-  <div id="tasks"></div>
- </section>
- <section class="card">
-  <div class="sectiontitle" style="margin-bottom:12px">今月の記録</div>
-  <div class="stats"><div class="stat"><b id="daysDone">0</b><span>トレーニングした日</span></div><div class="stat"><b id="rate">0%</b><span>実施率</span></div><div class="stat"><b id="walks">0</b><span>ウォーキング回数</span></div></div>
- </section>
- <div class="actions"><button class="secondary" id="todayBtn">今日に戻る</button><button class="secondary" id="exportBtn">記録をバックアップ</button><button class="secondary" id="importBtn">復元</button><input id="fileInput" type="file" accept="application/json" hidden></div>
- <p class="note">記録はこのiPhoneのブラウザ内に保存されます。Safariの履歴・Webサイトデータを消去すると記録が消えることがあります。「記録をバックアップ」から定期的に保存できます。</p>
- <footer>あなたのペースで、無理なく続けましょう。</footer>
+main{max-width:620px;margin:auto;padding:18px 15px calc(90px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;margin:7px 3px 18px}.eyebrow{font-size:11px;color:var(--green);letter-spacing:.12em}.brand{font-size:24px;font-weight:800;margin:3px 0}.subtitle{font-size:12px;color:var(--muted)}.leaf{font-size:29px}
+nav{position:fixed;z-index:5;bottom:0;left:0;right:0;background:#fffefaee;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+nav button{flex:1;max-width:150px;background:none;color:var(--muted);font-size:11px;padding:7px 2px;border-radius:12px}nav button.active{background:var(--pale);color:var(--green);font-weight:800}nav span{display:block;font-size:19px;margin-bottom:2px}
+.page{display:none}.page.active{display:block}.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:17px;margin:12px 0;box-shadow:0 4px 18px #26332608}
+h2{font-size:17px;margin:0 0 5px}.hint{font-size:12px;color:var(--muted);line-height:1.6}.date-title{font-size:20px;font-weight:800;margin:0 0 3px}
+.progress-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.progress-head b{font-size:14px}.count{font-size:13px;color:var(--green);font-weight:800}
+.track{height:8px;border-radius:20px;background:#edf0e9;overflow:hidden;margin-top:9px}.fill{height:100%;background:var(--green);border-radius:20px}
+.task{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0;padding-bottom:1px}.task input{width:25px;height:25px;accent-color:var(--green);flex:none}.task label{font-size:15px;flex:1}.task small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.mini{background:#f8f8f2;border-radius:15px;padding:13px}.mini strong{font-size:22px;color:var(--green);display:block}.mini span{font-size:11px;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.btn{border:0;border-radius:12px;padding:11px 14px;background:var(--pale);color:var(--green);font-weight:700;font-size:13px}.btn.dark{background:var(--green);color:white}.btn.subtle{background:#f1f0e9;color:var(--ink)}.btn.danger{background:#f7ece8;color:#995b4e}
+.monthbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.monthbar strong{font-size:18px}.arrow{border:0;background:#f0f1e9;border-radius:10px;padding:8px 14px;font-size:18px;color:var(--ink)}
+.week,.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.week div{text-align:center;font-size:11px;color:var(--muted);padding:5px 0}.day{min-height:43px;border:0;border-radius:11px;background:#f8f8f3;color:var(--ink);font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.day.out{opacity:.28}.day.selected{outline:2px solid var(--green);background:var(--pale)}.day.done{font-weight:800;color:#386449}.day.today{box-shadow:inset 0 0 0 1px var(--gold)}.dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.field label{font-size:12px;color:var(--muted)}input[type=date],input[type=number],textarea{width:100%;font:inherit;border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;color:var(--ink);font-size:16px}
+.records{display:flex;flex-direction:column;gap:8px}.record{display:flex;justify-content:space-between;align-items:center;background:#f8f8f3;padding:11px 12px;border-radius:12px;font-size:13px}.record button{border:0;background:transparent;color:var(--rose);font-size:12px}
+canvas{width:100%;height:190px;display:block}.chart-legend{display:flex;gap:14px;font-size:11px;color:var(--muted)}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;background:var(--green)}.legend-dot.gold{background:var(--gold)}
+.notice{font-size:11px;color:var(--muted);line-height:1.65;margin:12px 3px}.empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions .btn{flex:1}
+@media(min-width:520px){main{padding-top:25px}.day{min-height:52px}}
+</style></head>
+<body><main>
+<header><div><div class="eyebrow">MY WELLNESS JOURNAL</div><div class="brand">からだ記録</div><div class="subtitle">小さな積み重ねを、見える成果に。</div></div><div class="leaf">🌿</div></header>
+<section id="home" class="page active">
+ <div class="card"><div class="row"><div><div class="eyebrow">TODAY</div><div class="date-title" id="todayLabel"></div></div><button class="btn subtle" id="goToday">今日に戻る</button></div><p class="hint">できた項目にチェックを入れてください。</p><div id="todayTasks"></div></div>
+ <div class="card"><h2>今週の目標</h2><div class="hint" id="weekRange"></div><div id="weeklyProgress"></div></div>
+ <div class="card"><h2>今月の積み重ね</h2><div class="grid2"><div class="mini"><strong id="monthDays">0</strong><span>トレーニングした日</span></div><div class="mini"><strong id="monthWalks">0</strong><span>ウォーキング回数</span></div></div></div>
+</section>
+<section id="calendarPage" class="page">
+ <div class="card"><div class="monthbar"><button class="arrow" id="prev">‹</button><strong id="monthLabel"></strong><button class="arrow" id="next">›</button></div><div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div><div class="calendar" id="calendar"></div><p class="hint">日付を選ぶと、その日の記録を編集できます。</p></div>
+ <div class="card"><div class="date-title" id="selectedTitle"></div><div class="hint">できた項目にチェック</div><div id="selectedTasks"></div></div>
+</section>
+<section id="bodyPage" class="page">
+ <div class="card"><h2>体重・ウエストを記録</h2><p class="hint">測定した日だけ入力すれば大丈夫です。空欄の項目は記録されません。</p>
+ <div class="field"><label for="bodyDate">測定日</label><input type="date" id="bodyDate"></div>
+ <div class="grid2"><div class="field"><label for="weight">体重（kg）</label><input type="number" id="weight" min="0" max="300" step="0.1" placeholder="例：49.0"></div><div class="field"><label for="waist">ウエスト（cm）</label><input type="number" id="waist" min="0" max="250" step="0.1" placeholder="例：70.0"></div></div>
+ <div class="actions"><button class="btn dark" id="saveBody">記録を保存</button><button class="btn subtle" id="clearBody">入力をクリア</button></div></div>
+ <div class="card"><h2>からだの変化</h2><div class="chart-legend"><span><i class="legend-dot"></i>体重（kg）</span><span><i class="legend-dot gold"></i>ウエスト（cm）</span></div><canvas id="bodyChart" width="560" height="210"></canvas><div id="bodyEmpty" class="empty">測定記録がまだありません。</div></div>
+ <div class="card"><div class="row"><h2>測定履歴</h2><span class="hint">新しい順</span></div><div id="bodyList" class="records"></div></div>
+</section>
+<section id="reportPage" class="page">
+ <div class="card"><h2>週間レポート</h2><p class="hint">集計期間は日曜日〜土曜日です。</p><div class="row" style="margin:12px 0"><button class="arrow" id="weekPrev">‹</button><b id="reportWeek"></b><button class="arrow" id="weekNext">›</button></div><div id="reportProgress"></div></div>
+ <div class="card"><h2>月間レポート</h2><div class="monthbar"><button class="arrow" id="reportPrev">‹</button><strong id="reportMonth"></strong><button class="arrow" id="reportNext">›</button></div><div class="grid2"><div class="mini"><strong id="reportDays">0</strong><span>トレーニング日数</span></div><div class="mini"><strong id="reportRate">0%</strong><span>月の日数に対する割合</span></div></div><div id="monthProgress" style="margin-top:15px"></div></div>
+</section>
+<p class="notice">記録はこのiPhoneのブラウザ内に保存されます。アプリを入れ替える前や定期的に「バックアップ」を保存してください。ブラウザのWebサイトデータを消去すると記録が失われる場合があります。</p>
+<div class="card"><h2>データ管理</h2><div class="actions"><button class="btn subtle" id="exportBtn">バックアップ</button><button class="btn subtle" id="importBtn">バックアップから復元</button><input id="fileInput" type="file" accept="application/json" hidden></div></div>
 </main>
+<nav><button class="active" data-page="home"><span>⌂</span>ホーム</button><button data-page="calendarPage"><span>▦</span>カレンダー</button><button data-page="bodyPage"><span>◉</span>からだ記録</button><button data-page="reportPage"><span>▤</span>レポート</button></nav>
 <script>
-const tasks=[
- {id:"row",name:"背中：ペットボトルローイング",detail:"15回 × 3セット"},
- {id:"squat",name:"脚：スクワット",detail:"15回 × 2セット"},
- {id:"bridge",name:"お尻：ヒップリフト",detail:"15回 × 2セット"},
- {id:"walk",name:"ウォーキング",detail:"50分"}
-];
-const key="training-calendar-v1";
-let records={};try{records=JSON.parse(localStorage.getItem(key)||"{}")}catch(e){}
-let selected=new Date();selected.setHours(12,0,0,0);
-let shown=new Date(selected.getFullYear(),selected.getMonth(),1);
-const pad=n=>String(n).padStart(2,"0"), dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const $=id=>document.getElementById(id);
-function save(){localStorage.setItem(key,JSON.stringify(records))}
-function isDone(k){return !!(records[k]&&tasks.some(t=>records[k][t.id]))}
-function render(){
- const y=shown.getFullYear(),m=shown.getMonth();
- $("monthLabel").textContent=`${y}年${m+1}月`;
- const first=new Date(y,m,1), offset=(first.getDay()+6)%7, start=new Date(y,m,1-offset);
- const cal=$("calendar");cal.innerHTML="";
- for(let i=0;i<42;i++){
-  const d=new Date(start);d.setDate(start.getDate()+i);
-  const k=dateKey(d), b=document.createElement("button");b.className="day";
-  if(d.getMonth()!==m)b.classList.add("out");
-  if(dateKey(d)===dateKey(selected))b.classList.add("selected");
-  if(dateKey(d)===dateKey(new Date()))b.classList.add("today");
-  if(isDone(k))b.classList.add("done");
-  b.innerHTML=`<span>${d.getDate()}</span>${isDone(k)?'<i class="dot"></i>':''}`;
-  b.addEventListener("click",()=>{selected=d;render()});cal.appendChild(b);
- }
- $("selectedTitle").textContent=`${selected.getFullYear()}年${selected.getMonth()+1}月${selected.getDate()}日`;
- const k=dateKey(selected),r=records[k]||{};const area=$("tasks");area.innerHTML="";
- tasks.forEach(t=>{
-  const div=document.createElement("div");div.className="task";
-  const input=document.createElement("input");input.type="checkbox";input.id="task-"+t.id;input.checked=!!r[t.id];
-  input.addEventListener("change",()=>{records[k]=records[k]||{};records[k][t.id]=input.checked;if(!input.checked&&!tasks.some(x=>records[k][x.id]))delete records[k];save();render()});
-  const label=document.createElement("label");label.htmlFor=input.id;label.textContent=t.name;
-  const small=document.createElement("small");small.textContent=t.detail;label.appendChild(small);
-  div.append(input,label);area.appendChild(div);
- });
- const count=Object.keys(records).filter(x=>x.startsWith(`${y}-${pad(m+1)}-`)&&isDone(x)).length;
- const walk=Object.keys(records).filter(x=>x.startsWith(`${y}-${pad(m+1)}-`)&&records[x]?.walk).length;
- const total=new Date(y,m+1,0).getDate();
- $("daysDone").textContent=count;$("rate").textContent=Math.round(count/total*100)+"%";$("walks").textContent=walk;
-}
-$("prev").onclick=()=>{shown=new Date(shown.getFullYear(),shown.getMonth()-1,1);render()};
-$("next").onclick=()=>{shown=new Date(shown.getFullYear(),shown.getMonth()+1,1);render()};
-$("todayBtn").onclick=()=>{selected=new Date();selected.setHours(12,0,0,0);shown=new Date(selected.getFullYear(),selected.getMonth(),1);render()};
-$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(records,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="training-record-backup.json";a.click();URL.revokeObjectURL(a.href)};
-$("importBtn").onclick=()=>$("fileInput").click();
-$("fileInput").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!data||typeof data!=="object"||Array.isArray(data))throw Error();records=data;save();render();alert("記録を復元しました。")}catch(err){alert("バックアップファイルを読み込めませんでした。")}e.target.value=""};
-if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
-render();
-</script>
-</body></html>
+const tasks=[{id:"row",name:"背中のエクササイズ",detail:"15回 × 3セット",goal:3},{id:"squat",name:"スクワット",detail:"15回 × 2セット",goal:3},{id:"bridge",name:"ヒップリフト",detail:"15回 × 2セット",goal:3},{id:"walk",name:"ウォーキング",detail:"50分",goal:5}];
+const KEY="training-calendar-v1",BODYKEY="training-body-v1";
+const backupFallback={"2026-11-01":{"walk":true,"squat":true,"bridge":true},"2026-11-02":{"squat":false,"bridge":false,"walk":true,"row":true},"2026-11-03":{"walk":true},"2026-11-04":{"squat":true,"bridge":true,"walk":true},"2026-11-05":{"walk":true},"2026-11-06":{"walk":true,"row":true}};
+let records={},bodyRecords={};
+try{const raw=localStorage.getItem(KEY);records=raw?JSON.parse(raw):backupFallback}catch(e){records=backupFallback}
+try{bodyRecords=JSON.parse(localStorage.getItem(BODYKEY)||"{}")}catch(e){bodyRecords={}}
+const $=id=>document.getElementById(id),pad=n=>String(n).padStart(2,"0"),key=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+let selected=new Date();selected.setHours(12,0,0,0);let shown=new Date(selected.getFullYear(),selected.getMonth(),1);let reportStart=new Date(selected);reportStart.setDate(reportStart.getDate()-reportStart.getDay());reportStart.setHours(12,0,0,0);let reportMonth=new Date(selected.getFullYear(),selected.getMonth(),1);
+function save(){localStorage.setItem(KEY,JSON.stringify(records));localStorage.setItem(BODYKEY,JSON.stringify(bodyRecords))}
+function done(k,id){return !!records[k]?.[id]}
+function dayHas(k){return tasks.some(t=>done(k,t.id))}
+function weekStart(d){let x=new Date(d);x.setDate(x.getDate()-x.getDay());x.setHours(12,0,0,0);return x}
+function weekEnd(d){let x=weekStart(d);x.setDate(x.getDate()+6);return x}
+function fmt(d){return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`}
+function countDays(start,end,id){let n=0;for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1))if(done(key(d),id))n++;return n}
+function progressHTML(start,end){return tasks.map(t=>{let n=countDays(start,end,t.id),p=Math.min(100,Math.round(n/t.goal*100));return `<div style="margin:15px 0"><div class="progress-head"><b>${t.name}</b><span class="count">${n} / ${t.goal}日</span></div><div class="track"><div class="fill" style="width:${p}%"></div></div><div class="hint" style="margin-top:4px">達成率 ${p}%</div></div>`}).join("")}
+function renderTasks(container,date){let k=key(date),r=records[k]||{};container.innerHTML="";tasks.forEach(t=>{let div=document.createElement("div");div.className="task";let input=document.createElement("input");input.type="checkbox";input.checked=!!r[t.id];input.id=container.id+"-"+t.id;input.addEventListener("change",()=>{records[k]=records[k]||{};records[k][t.id]=input.checked;if(!tasks.some(x=>records[k][x.id]))delete records[k];save();renderAll()});let label=document.createElement("label");label.htmlFor=input.id;label.textContent=t.name;let small=document.createElement("small");small.textContent=t.detail;label.appendChild(small);div.append(input,label);container.appendChild(div)})}
+function renderHome(){let today=new Date();today.setHours(12,0,0,0);$("todayLabel").textContent=fmt(today);renderTasks($("todayTasks"),today);let s=weekStart(today),e=weekEnd(today);$("weekRange").textContent=`${fmt(s)} 〜 ${fmt(e)}`;$("weeklyProgress").innerHTML=progressHTML(s,e);let ym=`${today.getFullYear()}-${pad(today.getMonth()+1)}`,days=Object.keys(records).filter(k=>k.startsWith(ym)&&dayHas(k)).length,walk=Object.keys(records).filter(k=>k.startsWith(ym)&&done(k,"walk")).length;$("monthDays").textContent=days;$("monthWalks").textContent=walk}
+function renderCalendar(){let y=shown.getFullYear(),m=shown.getMonth();$("monthLabel").textContent=`${y}年${m+1}月`;let start=new Date(y,m,1);start.setDate(1-start.getDay());let c=$("calendar");c.innerHTML="";for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let k=key(d),b=document.createElement("button");b.className="day";if(d.getMonth()!==m)b.classList.add("out");if(k===key(selected))b.classList.add("selected");if(k===key(new Date()))b.classList.add("today");if(dayHas(k))b.classList.add("done");b.innerHTML=`<span>${d.getDate()}</span>${dayHas(k)?'<i class="dot"></i>':""}`;b.onclick=()=>{selected=d;renderCalendar()};c.appendChild(b)}$("selectedTitle").textContent=fmt(selected);renderTasks($("selectedTasks"),selected)}
+function renderReport(){let e=new Date(reportStart);e.setDate(e.getDate()+6);$("reportWeek").textContent=`${fmt(reportStart)} 〜 ${fmt(e)}`;$("reportProgress").innerHTML=progressHTML(reportStart,e);let y=reportMonth.getFullYear(),m=reportMonth.getMonth(),last=new Date(y,m+1,0).getDate(),s=new Date(y,m,1),end=new Date(y,m,last),ym=`${y}-${pad(m+1)}`;let days=Object.keys(records).filter(k=>k.startsWith(ym)&&dayHas(k)).length;$("reportMonth").textContent=`${y}年${m+1}月`;$("reportDays").textContent=days;$("reportRate").textContent=Math.round(days/last*100)+"%";$("monthProgress").innerHTML=tasks.map(t=>{let n=Object.keys(records).filter(k=>k.startsWith(ym)&&done(k,t.id)).length;return `<div style="margin:12px 0"><div class="progress-head"><b>${t.name}</b><span class="count">${n}日</span></div></div>`}).join("")}
+function renderBody(){let list=Object.entries(bodyRecords).sort((a,b)=>b[0].localeCompare(a[0]));$("bodyList").innerHTML=list.length?"":"<div class='empty'>測定記録がまだありません。</div>";list.forEach(([date,v])=>{let d=document.createElement("div");d.className="record";let left=document.createElement("span");left.textContent=`${date}　${v.weight!=null?v.weight+" kg":"—"}　${v.waist!=null?v.waist+" cm":"—"}`;let del=document.createElement("button");del.textContent="削除";del.onclick=()=>{if(confirm(`${date}の測定記録を削除しますか？`)){delete bodyRecords[date];save();renderBody()}};d.append(left,del);$("bodyList").appendChild(d)});drawChart(list)}
+function drawChart(list){let c=$("bodyChart"),ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);let vals=list.slice().reverse().filter(x=>x[1].weight!=null);let waists=list.slice().reverse().filter(x=>x[1].waist!=null);$("bodyEmpty").style.display=(vals.length||waists.length)?"none":"block";if(!vals.length&&!waists.length)return;function line(arr,color){if(!arr.length)return;let nums=arr.map(x=>Number(x[1].weight??x[1].waist)),min=Math.min(...nums),max=Math.max(...nums);if(min===max){min-=1;max+=1}ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=3;ctx.beginPath();arr.forEach((x,i)=>{let px=30+(arr.length===1?0:i*(500/(arr.length-1))),py=175-((nums[i]-min)/(max-min))*135;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);ctx.fillRect(px-3,py-3,6,6)});ctx.stroke()}line(vals,"#557b65");line(waists,"#c49a5b");ctx.fillStyle="#7b847b";ctx.font="12px sans-serif";ctx.fillText("古い記録",24,198);ctx.fillText("新しい記録",465,198)}
+function renderAll(){renderHome();renderCalendar();renderReport();renderBody()}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.page).classList.add("active");if(b.dataset.page==="bodyPage")renderBody()});
+$("goToday").onclick=()=>{document.querySelector('nav button[data-page="home"]').click()};
+$("prev").onclick=()=>{shown=new Date(shown.getFullYear(),shown.getMonth()-1,1);renderCalendar()};$("next").onclick=()=>{shown=new Date(shown.getFullYear(),shown.getMonth()+1,1);renderCalendar()};
+$("weekPrev").onclick=()=>{reportStart.setDate(reportStart.getDate()-7);renderReport()};$("weekNext").onclick=()=>{reportStart.setDate(reportStart.getDate()+7);renderReport()};
+$("reportPrev").onclick=()=>{reportMonth=new Date(reportMonth.getFullYear(),reportMonth.getMonth()-1,1);renderReport()};$("reportNext").onclick=()=>{reportMonth=new Date(reportMonth.getFullYear(),reportMonth.getMonth()+1,1);renderReport()};
+$("bodyDate").value=key(new Date());$("saveBody").onclick=()=>{let d=$("bodyDate").value,w=$("weight").value,wa=$("waist").value;if(!d||(!w&&!wa)){alert("測定日と、体重またはウエストのどちらかを入力してください。");return}bodyRecords[d]={...(w?{weight:Number(w)}:{}),...(wa?{waist:Number(wa)}:{})};save();$("weight").value="";$("waist").value="";renderBody();alert("測定記録を保存しました。")};$("clearBody").onclick=()=>{$("weight").value="";$("waist").value=""};
+$("exportBtn").onclick=()=>{let blob=new Blob([JSON.stringify({records,bodyRecords,version:2},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="karada-record-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$("importBtn").onclick=()=>$("fileInput").click();$("fileInput").onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());let r=data.records||data;if(!r||typeof r!=="object"||Array.isArray(r))throw Error();records={...records,...r};if(data.bodyRecords)bodyRecords={...bodyRecords,...data.bodyRecords};save();renderAll();alert("バックアップを復元しました。")}catch(err){alert("ファイルを読み込めませんでした。")}e.target.value=""};
+if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+renderAll();
+</script></body></html>
